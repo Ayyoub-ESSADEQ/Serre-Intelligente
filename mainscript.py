@@ -4,8 +4,7 @@ import ctypes
 
 ctypes.windll.shcore.SetProcessDpiAwareness(1) 
 
-
-##Configuration génerale
+##Configuration génerale.   
 root = tkinter.Tk()
 L = 1250
 h = 730
@@ -77,8 +76,9 @@ def evaluating(stars):
     elif stars == 1 :
         cnv.itemconfig('indicator',fill='#e9ddaf')
 
-def charts():
-    pass     ##dans cette fonction on doit avoir le graph realisé en utilisant matplotlib
+
+def charts(event):
+    pass
 
 def alerting(message):
     pass ##cette fonction permet d'envoyer un message
@@ -118,6 +118,6 @@ données_TH(donnée_humidité,(80,460),'h')
 
 #binding :
 cnv.tag_bind('btn_actualiser','<Button-1>',lambda event: updater(donnée_température,'23C° incroyable','t'))
-
+cnv.tag_bind('btn_actualiser','<Button-1>',charts)
 #the mainloop
 root.mainloop()
