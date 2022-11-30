@@ -4,10 +4,6 @@ import ctypes
 
 ctypes.windll.shcore.SetProcessDpiAwareness(1) 
 
-### History data indicator
-activated = False
-#####
-
 ##Configuration génerale.   
 root = tkinter.Tk()
 L = 1250
@@ -41,19 +37,22 @@ notification_found = tkinter.PhotoImage(file=r"Python project\User Interface\Pro
 scroller = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\scroller.png")
 title = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\title.png")
 close = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\close.png")
+active_close = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\active_close.png")
+shadow = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\shadow.png")
 
 #root components :
 cnv = tkinter.Canvas(root,width=L,height=h,bg="white",highlightthickness=0)
 
 ############################## The dashboard for history data :#############################
-
-frame_dash_scroller = tkinter.Canvas(root,width=500,height=h,bg='orange',highlightthickness=0,bd=0)
-history_data = tkinter.Canvas(root,width=470,height=h,scrollregion=(0,0,0,3000),bg='orange',bd=0,highlightthickness=0)
+color = '#aade87'
+frame_dash_scroller = tkinter.Canvas(root,width=600,height=h,bg='white',highlightthickness=0,bd=0)
+frame_dash_scroller.create_image(470,0,image=shadow,anchor='nw')
+history_data = tkinter.Canvas(root,width=470,height=h,scrollregion=(0,0,0,3000),bg=color,bd=0,highlightthickness=0)
 cnv.create_window(0,0,window=frame_dash_scroller,anchor='nw',tag='table')
 frame_dash_scroller.create_window(0,0,window=history_data,anchor='nw')
-frame_dash_scroller.create_line(485,0,485,h,width=3,fill='#c47e33')
+frame_dash_scroller.create_line(485,50,485,h-50,width=2,fill='#008000')
 frame_dash_scroller.create_image(485,50,image=scroller,anchor='center',tag='scroller')
-frame_dash_scroller.create_image(472,3,image=close,anchor='nw',tag='close')
+frame_dash_scroller.create_image(472,5,image=close,activeimage=active_close,anchor='nw',tag='close')
 history_data.create_oval(100,2800,110,2850,fill='black')#provisoire
 history_data.create_image(30,30,image=title,anchor='nw')
 cnv.itemconfigure('table',state='hidden')
@@ -156,6 +155,5 @@ données_TH(donnée_humidité,(80,460),'h')
 #binding :
 cnv.tag_bind('history_temp','<Button-1>',shower)
 cnv.tag_bind('btn_actualiser','<Button-1>',lambda event: updater(donnée_température,'23C° incroyable','t'))
-cnv.tag_bind('btn_actualiser','<Button-1>',charts)
 #the mainloop
 root.mainloop()
