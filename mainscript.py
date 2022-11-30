@@ -4,6 +4,10 @@ import ctypes
 
 ctypes.windll.shcore.SetProcessDpiAwareness(1) 
 
+### History data indicator
+activated = False
+#####
+
 ##Configuration génerale.   
 root = tkinter.Tk()
 L = 1250
@@ -34,11 +38,44 @@ act_history = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-
 stars = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\stars.png")
 notification = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\notification.png")
 notification_found = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\notification_found.png")
+scroller = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\scroller.png")
+title = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\title.png")
+close = tkinter.PhotoImage(file=r"Python project\User Interface\Projet-de-prise-en-main\ressource\close.png")
 
 #root components :
 cnv = tkinter.Canvas(root,width=L,height=h,bg="white",highlightthickness=0)
 
-    ##Stars :
+############################## The dashboard for history data :#############################
+
+frame_dash_scroller = tkinter.Canvas(root,width=500,height=h,bg='orange',highlightthickness=0,bd=0)
+history_data = tkinter.Canvas(root,width=470,height=h,scrollregion=(0,0,0,3000),bg='orange',bd=0,highlightthickness=0)
+cnv.create_window(0,0,window=frame_dash_scroller,anchor='nw',tag='table')
+frame_dash_scroller.create_window(0,0,window=history_data,anchor='nw')
+frame_dash_scroller.create_line(485,0,485,h,width=3,fill='#c47e33')
+frame_dash_scroller.create_image(485,50,image=scroller,anchor='center',tag='scroller')
+frame_dash_scroller.create_image(472,3,image=close,anchor='nw',tag='close')
+history_data.create_oval(100,2800,110,2850,fill='black')#provisoire
+history_data.create_image(30,30,image=title,anchor='nw')
+cnv.itemconfigure('table',state='hidden')
+
+def shower(evennt):
+    cnv.itemconfigure('table',state='normal')
+
+def closer(event):
+    cnv.itemconfigure('table',state='hidden')
+
+def scroll(event):
+    x = event.x
+    y = event.y
+    if 50<=y<=h-50:
+        frame_dash_scroller.coords('scroller',485,y)
+        a = (y-50)/630.
+        history_data.yview(tkinter.MOVETO,a)
+
+frame_dash_scroller.tag_bind('close','<Button-1>',closer)
+frame_dash_scroller.tag_bind('scroller','<B1-Motion>',scroll)
+#########################################################################################
+##Stars :
 for i in range(1,6):
     cnv.create_oval(968+35*(i-1),88,988+35*(i-1),108,outline='',state='hidden',fill='#ffdd55',tag='star{}'.format(i))
 
@@ -117,6 +154,7 @@ données_TH(donnée_température,(80,160),'t')
 données_TH(donnée_humidité,(80,460),'h')
 
 #binding :
+cnv.tag_bind('history_temp','<Button-1>',shower)
 cnv.tag_bind('btn_actualiser','<Button-1>',lambda event: updater(donnée_température,'23C° incroyable','t'))
 cnv.tag_bind('btn_actualiser','<Button-1>',charts)
 #the mainloop
