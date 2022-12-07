@@ -1,32 +1,12 @@
 import math
-import random
 from mysql.connector import connect
 import matplotlib.pyplot as plt
-import pywhatkit as kit
-import time
 
-mydb = connect(
-    host="localhost",
-    user="root",
-    password="yourpasswd",
-    database="serre",
-)
+mydb = connect(host="localhost",user="root",password="ayoube essadeq",database="serre",)
 
 cursor = mydb.cursor()
 
-
-def main():
-    delete_mesures(100)
-    for i in range(100):
-        t = random.randrange(-10, 50)
-        h = random.randrange(0, 100)
-        set_mesure(t, h)
-    # print(get_mesures("3")[5][0])
-    # for row in Tri("Humidite"):
-    #    print(row)
-    #Graph("Humidite", 10)
-    kit.sendwhatmsg("+212697476067", "msg", 16, 32)
-
+############################################ LES FONCTIONS REELLEMENT UTILISEES #######################
 
 def set_mesure(T: float, H: float):
     num = 0
@@ -42,9 +22,9 @@ def set_mesure(T: float, H: float):
         mydb.commit()
 
 
-def get_mesures(limit: str):
+def get_mesures(limit: int,type_données:str):
     try:
-        cursor.execute("SELECT * FROM main ORDER BY num DESC LIMIT "+limit)
+        cursor.execute(f"SELECT time_mesure,{type_données},Etat FROM main ORDER BY num DESC LIMIT "+str(limit))
         mesures_list_tuples = cursor.fetchall()
         return mesures_list_tuples
     except:
@@ -61,6 +41,7 @@ def delete_mesures(nbr_rows: int):
     except:
         print("Pas de mesures à supprimer!")
 
+################################################ LES FONCTIONS ASSISTANTES #################################
 
 def Etat(T: float, H: float):
     if (T <= 0):
@@ -86,7 +67,7 @@ def Tri(Param_tri: str):
     except:
         return "pas de mesures a trier"
 
-###################################################
+################################################### LES GRPAH ################################################""
 
 
 def Graph(Parametre: str, Last_n_mesures: int):
@@ -123,10 +104,7 @@ def Graph(Parametre: str, Last_n_mesures: int):
                                                                                  'size': 16}, c="red")
         plt.grid()
         plt.show()
-        plt.savefig(f"/Users/zakariaamensar/Desktop/Graphe: {Parametre}.png")
     except:
         print("pas de mesures à afficher!")
 
-
-if __name__ == '__main__':
-    main()
+print(get_mesures(100,'temperature'))
