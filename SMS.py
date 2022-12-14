@@ -14,6 +14,3 @@ def Warning_msg(msg: str):
         from_="+13854583625",
         to="+212624160665"
     )
-
-
-print(message.body)

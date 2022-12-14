@@ -1,4 +1,5 @@
 import tkinter
+import re
 from tkinter import PhotoImage
 import math
 from mysql.connector import connect
@@ -50,7 +51,7 @@ cnv = tkinter.Canvas(root,width=L,height=h,bg="white",highlightthickness=0)
 color = '#aade87'
 frame_dash_scroller = tkinter.Canvas(root,width=600,height=h,bg='white',highlightthickness=0,bd=0)
 frame_dash_scroller.create_image(470,0,image=shadow,anchor='nw')
-history_data = tkinter.Canvas(root,width=470,height=h,scrollregion=(0,0,0,3000),bg=color,bd=0,highlightthickness=0)
+history_data = tkinter.Canvas(root,width=470,height=h,scrollregion=(0,0,0,4000),bg=color,bd=0,highlightthickness=0)
 cnv.create_window(0,0,window=frame_dash_scroller,anchor='nw',tag='table')
 frame_dash_scroller.create_window(0,0,window=history_data,anchor='nw')
 frame_dash_scroller.create_line(485,50,485,h-50,width=2,fill='#008000')
@@ -60,12 +61,43 @@ history_data.create_image(30,30,image=title,anchor='nw')
 cnv.itemconfigure('table',state='hidden')
 
 
+for i in range(0,800) :
+    x = 50
+    y = 100
+    history_data.create_oval(x-10-5,y+20*i-5,x-10+5,y+20*i+5,outline='',fill = 'lightgreen')
+    history_data.create_text(x,y+20*i,text="",anchor = 'w',justify="right",tag='d{}'.format(i+1))
+
+def textShow(donné:str):
+    Digits = "\d{1,4}"
+    Judge = "'.*'"
+    lesDates = re.findall(Digits,donné)
+    normalDate = lesDates[2]+'/'+lesDates[1]+'/'+lesDates[0]
+    normalHour = lesDates[3]+':'+lesDates[4]+':'+lesDates[5]
+    status = re.findall(Judge,donné)[0]
+    valeur = lesDates[6]+'.'+lesDates[7]
+    result = normalDate+'-'+'-'+normalHour+' : '+valeur+'->'+status
+    return result
 
 def temp_show(event):
+    données = get_mesures(1000,'temperature')
     cnv.itemconfigure('table',state='normal')
+    for i in range(1000):
+        if i<len(données):
+            donné = str(données[i])
+            history_data.itemconfig('d{}'.format(i+1),text=textShow(donné))
+        else:
+            history_data.itemconfig('d{}'.format(i+1),text="")
 
 def hum_show(event):
+    données = get_mesures(1000,'humidité')
     cnv.itemconfigure('table',state='normal')
+
+    for i in range(1000):
+        if i<len(données):
+            donné = str(données[i])
+            history_data.itemconfig('d{}'.format(i+1),text=textShow(donné))
+        else:
+            history_data.itemconfig('d{}'.format(i+1),text="")
 
 def closer(event):
     cnv.itemconfigure('table',state='hidden')
@@ -122,7 +154,6 @@ def evaluating(stars):
 ############################## Tout Ce Qui est en relation avec La bas de données ######################
 
 mydb = connect(host="localhost",user="root",password="ayoube essadeq",database="serre",)
-
 cursor = mydb.cursor()
 
 ################################# LES FONCTIONS EN RELATION AVEC LA BASE #######################
@@ -148,7 +179,6 @@ def get_mesures(limit: int,type_données:str):
         return mesures_list_tuples
     except:
         return "Pas de mesures à afficher"
-
 
 def delete_mesures(nbr_rows: int):
     try:
@@ -232,13 +262,6 @@ def alerting(message):
 
 def measuring():
     pass ##les mesures de l'arduino
-
-def historique(L,p_initial):
-    for i in range(5,len(L)+5) :
-        x = p_initial[0]
-        y = p_initial[1]
-        cnv.create_oval(x-10-5,y+20*i-5,x-10+5,y+20*i+5,outline='',fill = 'lightgreen')
-        cnv.create_text(x,y+20*i,text=L[i-5],anchor = 'w',justify="right",tag='d{}'.format(i+1))
 
 def données_TH(L,p_initial,typ):
     for i in range(len(L)) :
